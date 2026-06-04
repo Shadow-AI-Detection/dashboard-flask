@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShadowAI</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- Left bar -->
+<div id="sidebar">
+  <!-- Logo -->
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="15" height="14" viewBox="0 0 15 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <mask id="mask0_1_28" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="15" height="14">
+        <g clip-path="url(#clip0_1_28)">
+        <path d="M0 0H15V14H9V7H0V0Z" fill="black"/>
+        </g>
+        </mask>
+        <g mask="url(#mask0_1_28)">
+        <rect width="15" height="14" rx="3" fill="white"/>
+        </g>
+        <defs>
+        <clipPath id="clip0_1_28">
+        <rect width="15" height="14" fill="white"/>
+        </clipPath>
+        </defs>
+      </svg>
+    </div>
+    <span class="logo-text">ShadowAI</span>
+  </div>
+  <!-- Menu vertical -->
+  <div class="nav-item active" onclick="showPage('dashboard', this)">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5.83333 1.75H1.75V7H5.83333V1.75Z" stroke="currentColor" stroke-width="0.933333" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12.25 1.75H8.16669V4.66667H12.25V1.75Z" stroke="currentColor" stroke-width="0.933333" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12.25 7H8.16669V12.25H12.25V7Z" stroke="currentColor" stroke-width="0.933333" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5.83333 9.33334H1.75V12.25H5.83333V9.33334Z" stroke="currentColor" stroke-width="0.933333" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p>Dashboard</p>
+  </div>
+  <div class="nav-item" onclick="showPage('users', this)">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M5.25 6.41666C6.2165 6.41666 7 5.63315 7 4.66666C7 3.70016 6.2165 2.91666 5.25 2.91666C4.2835 2.91666 3.5 3.70016 3.5 4.66666C3.5 5.63315 4.2835 6.41666 5.25 6.41666Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M1.75 11.6667C1.75 9.74166 3.325 8.16666 5.25 8.16666C7.175 8.16666 8.75 9.74166 8.75 11.6667" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9.91665 6.70832C10.7221 6.70832 11.375 6.05541 11.375 5.24999C11.375 4.44457 10.7221 3.79166 9.91665 3.79166C9.11123 3.79166 8.45831 4.44457 8.45831 5.24999C8.45831 6.05541 9.11123 6.70832 9.91665 6.70832Z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M8.75 8.45834C10.15 8.45834 11.375 9.45001 11.6667 10.7917" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p>Users</p>
+  </div>
+</div>
+
+<div id="main">
+  <!-- Top bar menu-->
+  <div id="topbar">
+    <span class="breadcrumb">Shadow AI / <span id="breadcrumb-page">Dashboard</span></span>
+    <span class="live-badge">
+      <span class="live-dot" id="live-dot"></span>
+      <span id="live-text">waiting for data</span>
+    </span>
+  </div>
+
+  <div id="content">
+
+    <!-- Dashboard -->
+    <div class="page active" id="page-dashboard">
+      <div style="margin-bottom:24px">
+        <h1 style="font-size:22px;font-weight:800;color:#111827">AI usage detection</h1>
+        <p style="font-size:13px;color:#6b7280;margin-top:4px">
+          Network flows captured via
+          <code style="background:#f3f4f6;padding:1px 5px;border-radius:4px;font-size:12px">Argus flow</code>
+          and classified in real time.
+        </p>
+      </div>
+
+      <div class="kpi-row">
+        <!-- Total flows captured -->
+        <div class="kpi-card">
+          <div class="kpi-label">Total flows captured</div>
+          <div class="kpi-value" id="kpi-total">—</div>
+          <div class="kpi-trend red"><span id="kpi-total-trend">—</span><span class="sub">vs. previous 24h</span></div>
+        </div>
+
+        <!-- AI flows -->
+        <div class="kpi-card">
+          <div class="kpi-label">AI flows</div>
+          <div class="kpi-value" id="kpi-ai">—</div>
+          <div class="kpi-trend red"><span id="kpi-ai-trend">—</span><span class="sub">share detected as AI</span></div>
+        </div>
+
+        <!-- Unique users -->
+        <div class="kpi-card">
+          <div class="kpi-label">Unique sources (AI)</div>
+          <div class="kpi-value" id="kpi-uniq">—</div>
+          <div class="kpi-trend red"><span id="kpi-uniq-trend">—</span><span class="sub">of active sources</span></div>
+        </div>
+
+        <!-- Average detection confidence -->
+        <div class="kpi-card">
+          <div class="kpi-label">Avg. detection confidence</div>
+          <div class="kpi-value" id="kpi-conf">- <span style="font-size:14px;color:#9ca3af;font-weight:400">/ 100</span></div>
+          <div class="kpi-trend gray"><span class="sub">min threshold: 50</span></div>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-card">
+          <div class="chart-title">Flow volume – AI vs Non-AI</div>
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> AI flows</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> Non-AI flows</div>
+          </div>
+          <canvas id="lineChart" height="80"></canvas>
+        </div>
+        <div class="donut-card">
+          <div class="chart-title">Distribution <span style="font-weight:400;color:#9ca3af;font-size:11px">— last month</span></div>
+          <div class="donut-wrap">
+            <canvas id="donutChart"></canvas>
+            <div class="donut-center">
+              <div class="donut-pct" id="donut-pct">—%</div>
+              <div class="donut-sub">AI detected</div>
+            </div>
+          </div>
+          <div id="dist-rows"></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Captured flows live</span>
+          <span class="live-badge" id="live-label" style="display:none">
+            <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;animation:pulse 1.5s infinite"></span>
+            Live
+          </span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>TIME</th><th>SOURCE IP</th><th>LABEL</th><th>CONFIDENCE</th>
+            </tr>
+          </thead>
+          <tbody id="flow-tbody">
+            <tr><td colspan="6" class="empty">En attente de flows...</td></tr>
+          </tbody>
+        </table>
+        <div class="table-footer" id="table-footer"></div>
+      </div>
+    </div>
+
+    <!-- Users -->
+<div class="page" id="page-users">
+  <div class="page-header">
+    <div>
+      <h1 style="font-size:22px;font-weight:800;color:#111827">Users</h1>
+      <p style="font-size:13px;color:#6b7280;margin-top:4px">Map IP addresses to people and devices. Per-user AI usage statistics.</p>
+    </div>
+    <button class="add-btn" onclick="openAddUserModal()">+ Add user</button>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi-card"><div class="kpi-label">Mapped users</div><div class="kpi-value" id="u-mapped">—</div></div>
+    <div class="kpi-card">
+      <div class="kpi-label" style="display:flex;align-items:center;gap:5px">
+        <span style="width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block"></span>Heavy AI users
+      </div>
+      <div class="kpi-value" id="u-heavy">—</div>
+      <div class="kpi-trend gray">≥ 50% AI flows</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">AI flows attributed (24h)</div>
+      <div class="kpi-value" id="u-attr">—</div>
+      <div class="kpi-trend gray">across mapped users</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-header">
+      <span class="table-title">Directory</span>
+      <input class="search-input" type="text" placeholder="Search by name, IP, device..."
+        id="user-search" oninput="renderUsers(allIpStats)">
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>USER</th><th>EMAIL</th><th>IP ADDRESS</th>
+          <th>DEVICE</th><th>FLOWS 24H</th><th>AI SHARE</th><th></th>
+        </tr>
+      </thead>
+      <tbody id="user-tbody">
+        <tr><td colspan="8" class="empty">Aucun utilisateur</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal add user -->
+<div id="user-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:100;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;padding:28px;width:420px;box-shadow:0 20px 60px rgba(0,0,0,0.15);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <h2 style="font-size:16px;font-weight:700;color:#111827">Add user</h2>
+      <span onclick="closeAddUserModal()" style="cursor:pointer;color:#9ca3af;font-size:18px">✕</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#6b7280;display:block;margin-bottom:4px">NAME *</label>
+        <input id="input-name" type="text" placeholder="Marie Dupont" style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#6b7280;display:block;margin-bottom:4px">EMAIL</label>
+        <input id="input-email" type="email" placeholder="marie@acme.corp" style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#6b7280;display:block;margin-bottom:4px">IP ADDRESS *</label>
+        <input id="input-ip" type="text" placeholder="10.12.4.18" style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:#6b7280;display:block;margin-bottom:4px">DEVICE</label>
+        <input id="input-device" type="text" placeholder="MacBook Pro 14" style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:8px 10px;font-size:13px;outline:none">
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
+      <button onclick="closeAddUserModal()" style="background:#f3f4f6;color:#374151;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Annuler</button>
+      <button onclick="submitAddUser()" style="background:#111827;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer">Add user</button>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/users.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
