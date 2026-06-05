@@ -5,11 +5,15 @@ Flask API and visualization dashboard for real-time AI-generated network traffic
 ## Project Structure
 
 ```
-├── main.py                  # Flask API (predict, results, users routes)
+├── app.py                  # App factory + blueprint registration
 ├── db.py                   # SQLite database management
 ├── model.pkl               # Classification model 
+├── routes/
+│   ├── predict_routes.py   # Blueprint: /predict
+│   ├── result_routes.py    # Blueprint: /results
+│   └── user_routes.py      # Blueprint: /users
 ├── data/
-│   └── flows.db            # SQLite database 
+│   └── flows.db            # SQLite database
 ├── templates/
 │   └── index.html          # HTML dashboard
 └── static/
@@ -50,7 +54,19 @@ pip install -r requirements.txt
 ## Running
 
 ```bash
-python3 main.py
+python3 app.py
 ```
 
-The dashboard is available at `http://localhost:5001`.
+The dashboard is available at `http://localhost:5001`
+
+## API Routes
+
+| Method | Route | Description |
+|---|---|---|
+| `POST` | `/predict/` | Receives flows, runs prediction and saves to database |
+| `GET` | `/results/` | Returns all flows with predictions |
+| `GET` | `/users/` | Returns all registered users |
+| `POST` | `/users/` | Creates a new user |
+| `DELETE` | `/users/<id>` | Deletes a user |
+| `GET` | `/` | Serves the dashboard |
+
