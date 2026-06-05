@@ -1,5 +1,7 @@
+import os
 from flask import Flask, render_template
 import joblib
+from flask_cors import CORS
 from db import init_db
 from routes.predict_routes import predict_blueprint, init_model
 from routes.result_routes import result_blueprint
@@ -17,6 +19,9 @@ Returns:
 """
 def create_app():
     app = Flask(__name__)
+    app.config["DEBUG"] = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+
+    CORS(app)
     init_model(model)
 
     app.register_blueprint(predict_blueprint, url_prefix="/predict")
@@ -31,4 +36,5 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(port=5001, debug=True)
+    port = int(os.getenv("PORT", 5001))
+    app.run(host="0.0.0.0", port=port)
