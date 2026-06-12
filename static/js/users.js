@@ -5,7 +5,7 @@ let allIpStats = {};
  * Fetch user statistics from the backend API and update the users view
  */
 async function fetchUsers() {
-  const res = await fetch('/users');
+  const res = await fetch('/users/');
   allUsers = await res.json();
   renderUsers(allIpStats);
 }
@@ -29,7 +29,7 @@ function getInitials(name) {
  */
 async function deleteUser(id) {
   if (!confirm('Supprimer cet utilisateur ?')) return;
-  await fetch(`/users/${id}`, { method: 'DELETE' });
+  await fetch(`/users/${id}/`, { method: 'DELETE' });
   fetchUsers();
 }
 
@@ -145,7 +145,7 @@ async function submitAddUser() {
 
   if (!name || !ip_address) return alert('Name and IP are required');
 
-  await fetch('/users', {
+  await fetch('/users/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, email, ip_address, device })
