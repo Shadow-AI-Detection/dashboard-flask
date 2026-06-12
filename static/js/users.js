@@ -29,7 +29,7 @@ function getInitials(name) {
  */
 async function deleteUser(id) {
   if (!confirm('Supprimer cet utilisateur ?')) return;
-  await fetch(`/users/${id}/`, { method: 'DELETE' });
+  await fetch(`/users/${id}`, { method: 'DELETE' });
   fetchUsers();
 }
 
