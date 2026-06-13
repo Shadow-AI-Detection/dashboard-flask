@@ -34,21 +34,31 @@ Returns:
 """
 @predict_blueprint.route("/", methods=["POST"])
 def predict():
-    df = pd.DataFrame(request.json)
+    payload = request.json
 
-    # verify that all the columns are included
+    # 422: malformed or empty input
+    if not payload or not isinstance(payload, list):
+        return jsonify({"error": "Request body must be a non-empty JSON array of flow objects"}), 422
+
+    try:
+        df = pd.DataFrame(payload)
+    except Exception:
+        return jsonify({"error": "Could not parse input data"}), 422
+
+    # 422: missing required features
     missing = [col for col in FEATURES if col not in df.columns]
     if missing:
-        return jsonify({"error": f"Colonnes manquantes : {missing}"}), 400
+        return jsonify({"error": f"Missing required fields: {missing}"}), 422
 
-    # predict
-    proba = model.predict_proba(df[FEATURES])
-    df["prediction"] = (proba[:, 1] >= 0.5).astype(int)
-    df["confidence"] = (proba[:, 1] * 100).round(1)
+    try:
+        proba = model.predict_proba(df[FEATURES])
+        df["prediction"] = (proba[:, 1] >= 0.5).astype(int)
+        df["confidence"] = (proba[:, 1] * 100).round(1)
 
-    # save in the database
-    records = df.fillna(0).to_dict(orient="records")
-    insert_flows(records)
-    delete_old_flows(days=30)
+        records = df.fillna(0).to_dict(orient="records")
+        insert_flows(records)
+        delete_old_flows(days=30)
 
-    return jsonify({"status": "ok", "count": len(df), "ai_flows": int(df["prediction"].sum())})
+        return jsonify({"status": "ok", "count": len(df), "ai_flows": int(df["prediction"].sum())})
+    except Exception:
+        return jsonify({"error": "Internal server error during prediction"}), 500

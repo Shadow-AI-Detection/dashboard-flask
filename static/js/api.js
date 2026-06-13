@@ -61,7 +61,7 @@ function setLiveStatus(on, text) {
  */
 async function fetchResults() {
   try {
-    const res = await fetch('/results');
+    const res = await fetch('/results/');
     const data = await res.json();
     if (Array.isArray(data) && data.length > 0) {
       allResults = data;

@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import joblib
 from flask_cors import CORS
 from db import init_db
@@ -8,7 +8,8 @@ from routes.result_routes import result_blueprint
 from routes.user_routes import user_blueprint
 
 init_db()
-model = joblib.load("model.pkl")
+MODEL_VERSION = "v7"
+model = joblib.load(f"model-{MODEL_VERSION}.pkl")
 
 """
 Create and configure the Flask application. Initializes the prediction 
@@ -31,6 +32,14 @@ def create_app():
     @app.route("/")
     def index():
         return render_template("index.html")
+
+    @app.route("/health")
+    def health():
+        return jsonify({
+            "status": "ok",
+            "model_loaded": model is not None,
+            "model_version": MODEL_VERSION
+        })
 
     return app
 
