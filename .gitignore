@@ -44,6 +44,7 @@ instance/
 # Environment variables
 .env
 .env.*
+.env.deploy
 
 # Logs
 *.log
