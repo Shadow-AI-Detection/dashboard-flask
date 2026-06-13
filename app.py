@@ -8,7 +8,8 @@ from routes.result_routes import result_blueprint
 from routes.user_routes import user_blueprint
 
 init_db()
-model = joblib.load("model.pkl")
+MODEL_VERSION = "v7"
+model = joblib.load(f"model-{MODEL_VERSION}.pkl")
 
 """
 Create and configure the Flask application. Initializes the prediction 
@@ -36,7 +37,8 @@ def create_app():
     def health():
         return jsonify({
             "status": "ok",
-            "model_loaded": model is not None
+            "model_loaded": model is not None,
+            "model_version": MODEL_VERSION
         })
 
     return app
