@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import joblib
 from flask_cors import CORS
 from db import init_db
@@ -31,6 +31,13 @@ def create_app():
     @app.route("/")
     def index():
         return render_template("index.html")
+
+    @app.route("/health")
+    def health():
+        return jsonify({
+            "status": "ok",
+            "model_loaded": model is not None
+        })
 
     return app
 
