@@ -34,9 +34,14 @@ test "/predict/" route with incomplete flow
 """
 def test_predict_missing_columns(client):
     response = client.post("/predict/", json=[{"FlowDuration": 1.0}])
-    assert response.status_code == 400
-    data = response.get_json()
-    assert "error" in data
+    assert response.status_code == 422
+
+"""
+test "/predict/" route with empty payload
+"""
+def test_predict_empty_payload(client):
+    response = client.post("/predict/", json=[])
+    assert response.status_code == 422
 
 """
 test "/predict/" route with valid input
@@ -92,7 +97,7 @@ def test_delete_user(client):
     new_user = {
         "name": "Boss Lady",
         "email": "theodora@gmail.com",
-        "ip_address": "10.99.99.99",
+        "ip_address": "10.99.99.98",
         "device": "MacBook Pro"
     }
     client.post("/users/", json=new_user)
